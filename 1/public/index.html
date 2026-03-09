@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Birthday in History</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div id="confetti-container"></div>
+
+  <!-- ════════════════ LANDING ════════════════ -->
+  <section id="landing">
+    <div class="bg-orb orb1"></div>
+    <div class="bg-orb orb2"></div>
+    <div class="bg-orb orb3"></div>
+    <canvas id="starfield"></canvas>
+
+    <div class="landing-wrap">
+      <p class="eyebrow">✦ &nbsp; Historical Discovery</p>
+      <h1 class="hero-heading">Your Birthday<br/><em>in History</em></h1>
+      <p class="hero-body">Every day holds untold stories. Discover the remarkable events woven into the fabric of the day you were born.</p>
+
+      <div class="form-glass">
+        <div class="field-row">
+          <div class="field">
+            <label>Your Name</label>
+            <input id="inp-name" type="text" placeholder="e.g. Tharun" autocomplete="off"/>
+          </div>
+        </div>
+        <div class="field-row triple">
+          <div class="field">
+            <label>Day</label>
+            <div class="select-wrap">
+              <select id="inp-day"></select>
+              <span class="select-arrow">▾</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Month</label>
+            <div class="select-wrap">
+              <select id="inp-month"></select>
+              <span class="select-arrow">▾</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Year</label>
+            <input id="inp-year" type="number" placeholder="e.g. 2001" min="1" max="2099"/>
+          </div>
+        </div>
+        <p id="form-err" class="form-err"></p>
+        <button id="explore-btn" onclick="submitForm()">
+          <span>Explore My Birthday in History</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════ LOADING ════════════════ -->
+  <section id="loading" class="page-hidden">
+    <div class="loader-wrap">
+      <div class="loader-ring">
+        <div class="loader-ring-inner"></div>
+      </div>
+      <p class="loader-msg" id="loader-msg">Opening historical archives…</p>
+      <div class="loader-track"><div class="loader-fill" id="loader-fill"></div></div>
+      <p class="loader-sub">This may take a moment while we search through centuries…</p>
+    </div>
+  </section>
+
+  <!-- ════════════════ RESULTS ════════════════ -->
+  <section id="results" class="page-hidden">
+    <div class="results-wrap">
+
+      <button class="back-btn" onclick="goBack()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        New Search
+      </button>
+
+      <!-- FUTURE DATE -->
+      <div id="msg-future" class="msg-card page-hidden">
+        <div class="msg-emoji">⏳</div>
+        <h2>Time Travel Not Available</h2>
+        <p>Sorry, time travel is not possible.<br/>You are either not born yet or history has not reached that date.</p>
+      </div>
+
+      <!-- ERROR -->
+      <div id="msg-error" class="msg-card page-hidden">
+        <div class="msg-emoji">📜</div>
+        <h2>History seems quiet today</h2>
+        <p>We couldn't fetch events right now, but every birthday is still special.</p>
+      </div>
+
+      <!-- SUCCESS -->
+      <div id="success" class="page-hidden">
+
+        <!-- 🎂 Birthday Banner (today only) -->
+        <div id="bday-banner" class="bday-banner page-hidden">
+          <div class="bday-sparkles">
+            <span>✨</span><span>🎉</span><span>✨</span>
+          </div>
+          <h2 id="bday-title" class="bday-title"></h2>
+          <p class="bday-sub">Today is your special day. Let's explore the moments in history that share your birthday.</p>
+        </div>
+
+        <!-- Greeting -->
+        <p class="greeting" id="greeting"></p>
+
+        <!-- Year Context -->
+        <div class="section-block" id="year-ctx-block">
+          <p class="section-label">When you were born in <span id="ctx-year" class="label-accent"></span></p>
+          <div class="ctx-pills" id="ctx-pills"></div>
+        </div>
+
+        <!-- Fallback message -->
+        <div id="fallback-note" class="fallback-note page-hidden">
+          <span>📜</span>
+          <p>Interesting… nothing major happened in your exact birth year, but your birthday has still witnessed fascinating moments across history.</p>
+        </div>
+
+        <!-- Timeline -->
+        <div class="section-block">
+          <p class="section-label">Birthday Timeline</p>
+          <div class="timeline-scroll">
+            <div class="timeline" id="timeline"></div>
+          </div>
+        </div>
+
+        <!-- Skeleton placeholders while rendering -->
+        <div id="skeletons" class="events-list">
+          <div class="skel-card"></div>
+          <div class="skel-card"></div>
+          <div class="skel-card"></div>
+        </div>
+
+        <!-- Event Cards -->
+        <div class="events-list" id="events-list"></div>
+
+        <!-- Famous People -->
+        <div class="section-block" id="famous-block">
+          <p class="section-label">You Share Your Birthday With</p>
+          <div class="famous-grid" id="famous-grid"></div>
+        </div>
+
+      </div><!-- /success -->
+    </div><!-- /results-wrap -->
+  </section>
+
+  <!-- ════════════════ THEATRE OVERLAY ════════════════ -->
+  <div id="overlay" class="overlay page-hidden">
+    <div class="overlay-backdrop" onclick="closeOverlay()"></div>
+    <div class="overlay-card" id="overlay-card">
+      <button class="ov-close" onclick="closeOverlay()">✕</button>
+      <div class="ov-img-wrap" id="ov-img-wrap">
+        <img id="ov-img" src="" alt=""/>
+        <div class="ov-img-gradient"></div>
+      </div>
+      <div class="ov-body">
+        <p class="ov-eyebrow">On the day you were born…</p>
+        <span class="ov-big-year" id="ov-year"></span>
+        <h2 class="ov-title" id="ov-title"></h2>
+        <p class="ov-desc" id="ov-desc"></p>
+        <a class="ov-link" id="ov-link" href="#" target="_blank" rel="noopener">Read full article on Wikipedia →</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

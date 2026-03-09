@@ -1,0 +1,13 @@
+{
+  "name": "birthday-in-history",
+  "version": "2.0.0",
+  "description": "Your Birthday in History — Cloudflare AI powered",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.18.2"
+  }
+}
