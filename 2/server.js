@@ -7,7 +7,7 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//const GROQ_KEY = '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';
+
 
 // ── Built-in HTTPS helpers ───────────────────────────────────
 function httpsPost(hostname, urlPath, headers, body) {
